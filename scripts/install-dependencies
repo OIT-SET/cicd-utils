@@ -1,0 +1,56 @@
+#!/bin/bash
+
+set -e
+
+# Dependency pins/hashes
+J2TMPL_VERSION=0.0.13
+J2TMPL_HASH=5bbca0488eb0e892868ae2a7fd975c65cfb03fe8d1199dfa8717d16326b6aee0
+BUILDER_VERSION=0.0.1
+BUILDER_HASH=9f74d9157f3797edf7e2e686aaca45f862e34d718244e7afbff6a7a88dff3c11
+
+
+function download_builder_script() {
+    wget -O /usr/bin/builder "https://raw.githubusercontent.com/OIT-SET/cicd-utils/releases/v${BUILDER_VERSION}/builder" && chmod +x /usr/bin/builder
+    (echo "${BUILDER_HASH}  /usr/bin/builder" | sha256sum -c -) || (sha256sum /usr/bin/builder && exit 1)
+}
+
+function download_j2tmpl() {
+    wget -O /usr/bin/j2tmpl "https://github.com/ikogan/j2tmpl/releases/download/v${J2TMPL_VERSION}/j2tmpl" && chmod +x /usr/bin/j2tmpl
+    (echo "${J2TMPL_HASH}  /usr/bin/j2tmpl" | sha256sum -c -) || (sha256sum /usr/bin/j2tmpl && exit 1)
+}
+
+if [ $# -eq 0 ]; then
+    echo "Usage: $0 repo_type [dependencies...]"
+    exit 1
+fi
+
+REPO_TYPE=${1}
+shift
+
+DEPENDENCIES=()
+
+while [[ $# -gt 0 ]]; do
+    DEPENDENCIES+=("$1")
+    shift
+done
+
+case $REPO_TYPE in
+    *)
+        echo "Defaulting to nestjs builder script for repo type [${REPO_TYPE}]."
+        download_builder_script
+        ;;
+esac
+
+# For each dependency, execute the download function
+
+for DEP in "${DEPENDENCIES[@]}"; do
+    case $DEP in
+        "j2tmpl")
+            echo "Downloading j2tmpl..."
+            download_j2tmpl
+            ;;
+        *)
+            echo "Unknown dependency [${DEP}]. Skipping."
+            ;;
+    esac
+done
