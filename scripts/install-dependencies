@@ -19,20 +19,12 @@ function download_j2tmpl() {
     (echo "${J2TMPL_HASH}  /usr/bin/j2tmpl" | sha256sum -c -) || (sha256sum /usr/bin/j2tmpl && exit 1)
 }
 
-if [ $# -eq 0 ]; then
-    echo "Usage: $0 repo_type [dependencies...]"
+if [ $# -ne 1 ]; then
+    echo "Usage: $0 repo_type"
     exit 1
 fi
 
 REPO_TYPE=${1}
-shift
-
-DEPENDENCIES=()
-
-while [[ $# -gt 0 ]]; do
-    DEPENDENCIES+=("$1")
-    shift
-done
 
 case $REPO_TYPE in
     *)
@@ -41,16 +33,6 @@ case $REPO_TYPE in
         ;;
 esac
 
-# For each dependency, execute the download function
-
-for DEP in "${DEPENDENCIES[@]}"; do
-    case $DEP in
-        "j2tmpl")
-            echo "Downloading j2tmpl..."
-            download_j2tmpl
-            ;;
-        *)
-            echo "Unknown dependency [${DEP}]. Skipping."
-            ;;
-    esac
-done
+# Install our defaults
+echo "Downloading j2tmpl..."
+download_j2tmpl
