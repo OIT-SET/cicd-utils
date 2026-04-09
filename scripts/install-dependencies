@@ -10,11 +10,13 @@ BUILDER_HASH=9f74d9157f3797edf7e2e686aaca45f862e34d718244e7afbff6a7a88dff3c11
 
 
 function download_builder_script() {
+    echo "Downloading builder script"
     wget -O /usr/bin/builder "https://raw.githubusercontent.com/OIT-SET/cicd-utils/releases/v${BUILDER_VERSION}/builder" && chmod +x /usr/bin/builder
     (echo "${BUILDER_HASH}  /usr/bin/builder" | sha256sum -c -) || (sha256sum /usr/bin/builder && exit 1)
 }
 
 function download_j2tmpl() {
+    echo "Downloading j2tmpl"
     wget -O /usr/bin/j2tmpl "https://github.com/ikogan/j2tmpl/releases/download/v${J2TMPL_VERSION}/j2tmpl" && chmod +x /usr/bin/j2tmpl
     (echo "${J2TMPL_HASH}  /usr/bin/j2tmpl" | sha256sum -c -) || (sha256sum /usr/bin/j2tmpl && exit 1)
 }
@@ -34,5 +36,4 @@ case $REPO_TYPE in
 esac
 
 # Install our defaults
-echo "Downloading j2tmpl..."
 download_j2tmpl
