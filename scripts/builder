@@ -1,0 +1,76 @@
+#!/bin/bash
+
+set -e
+
+if [ $# -eq 0 ]
+then
+    echo "Usage: $0 [install|build] [dev|prod]"
+    exit 1
+fi
+
+if [ $# -eq 1 ]
+then
+    echo "Error: Missing build_type [dev|prod]."
+    exit 1
+fi
+
+ACTION=${1}
+if [[ "${ACTION}" != "install" && "${ACTION}" != "build" ]]; then
+    echo "Error: Invalid action [${ACTION}]."
+    exit 1
+fi
+
+BUILD_TYPE=${2}
+if [[ "${BUILD_TYPE}" != "dev" && "${BUILD_TYPE}" != "prod" ]]; then
+    echo "Error: Invalid build_type [${BUILD_TYPE}]."
+    exit 1
+fi
+
+echo "Running action [${ACTION}] for build type [${BUILD_TYPE}]."
+
+if [[ "${ACTION}" == "install" ]]
+then
+    # skafold kaniko build or ci/cd pipeline build.
+    NPMRC="/kaniko/npm/npmrc"
+
+    if [ -f /run/secrets/npmrc ]
+    then
+        # skaffold local profile build.
+        NPMRC=/run/secrets/npmrc
+    fi
+
+    if [[ "${BUILD_TYPE}" == 'dev' ]]
+    then
+        echo "Running npm install"
+        npm install --userconfig=${NPMRC}
+        exit 0
+    fi
+    
+    if [[ "${BUILD_TYPE}" == 'prod' ]]
+    then
+        echo "Running npm ci"
+        npm ci --userconfig=${NPMRC}
+        exit 0
+    fi
+fi
+
+if [[ "${ACTION}" == "build" ]]
+then
+    if [[ "${BUILD_TYPE}" == "dev" ]]
+    then
+        echo "No actions needed for build type [${BUILD_TYPE}]."
+        exit 0
+    fi
+
+    if [[ "${BUILD_TYPE}" == "prod" ]]
+    then
+        echo "Running NestJs build."
+        npm run build
+        rm -rf ./src
+        rm -rf ./test
+        exit 0
+    fi
+fi
+
+echo "Error: Unknown action [${ACTION}]."
+exit 1
