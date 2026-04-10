@@ -11,7 +11,7 @@ BUILDER_HASH=9f74d9157f3797edf7e2e686aaca45f862e34d718244e7afbff6a7a88dff3c11
 
 function download_builder_script() {
     echo "Downloading builder script"
-    wget -O /usr/bin/builder "https://raw.githubusercontent.com/OIT-SET/cicd-utils/releases/v${BUILDER_VERSION}/builder" && chmod +x /usr/bin/builder
+    wget -O /usr/bin/builder "https://github.com/OIT-SET/cicd-utils/releases/download/v${BUILDER_VERSION}/builder" && chmod +x /usr/bin/builder
     (echo "${BUILDER_HASH}  /usr/bin/builder" | sha256sum -c -) || (sha256sum /usr/bin/builder && exit 1)
 }
 
