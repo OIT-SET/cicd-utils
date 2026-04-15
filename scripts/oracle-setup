@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# install required oracle dependencies
+apt-get update && \
+    apt-get install -y --no-install-recommends libaio1 libnsl2 && \
+    rm -rf /var/lib/apt/lists/*
