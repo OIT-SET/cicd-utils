@@ -3,15 +3,16 @@
 set -e
 
 # Dependency pins/hashes
+RELEASE_VERSION=0.0.2
 J2TMPL_VERSION=0.0.13
 J2TMPL_HASH=5bbca0488eb0e892868ae2a7fd975c65cfb03fe8d1199dfa8717d16326b6aee0
-BUILDER_VERSION=0.0.1
 BUILDER_HASH=9f74d9157f3797edf7e2e686aaca45f862e34d718244e7afbff6a7a88dff3c11
+ORACLE_SETUP_HASH=aa17931bc2775c943095556297db0c67408e72aaa593a4d873a2ac56a01475ba
 
 
 function download_builder_script() {
     echo "Downloading builder script"
-    wget -O /usr/bin/builder "https://github.com/OIT-SET/cicd-utils/releases/download/v${BUILDER_VERSION}/builder" && chmod +x /usr/bin/builder
+    wget -O /usr/bin/builder "https://github.com/OIT-SET/cicd-utils/releases/download/v${RELEASE_VERSION}/builder" && chmod +x /usr/bin/builder
     (echo "${BUILDER_HASH}  /usr/bin/builder" | sha256sum -c -) || (sha256sum /usr/bin/builder && exit 1)
 }
 
@@ -19,6 +20,12 @@ function download_j2tmpl() {
     echo "Downloading j2tmpl"
     wget -O /usr/bin/j2tmpl "https://github.com/ikogan/j2tmpl/releases/download/v${J2TMPL_VERSION}/j2tmpl" && chmod +x /usr/bin/j2tmpl
     (echo "${J2TMPL_HASH}  /usr/bin/j2tmpl" | sha256sum -c -) || (sha256sum /usr/bin/j2tmpl && exit 1)
+}
+
+function download_oracle_setup_script() {
+    echo "Downloading oracle setup script"
+    wget -O /usr/bin/oracle-setup "https://github.com/OIT-SET/cicd-utils/releases/download/v${RELEASE_VERSION}/oracle-setup" && chmod +x /usr/bin/oracle-setup
+    (echo "${ORACLE_SETUP_HASH}  /usr/bin/oracle-setup" | sha256sum -c -) || (sha256sum /usr/bin/oracle-setup && exit 1)
 }
 
 if [ $# -ne 1 ]; then
@@ -29,6 +36,11 @@ fi
 REPO_TYPE=${1}
 
 case $REPO_TYPE in
+    "nestjs-thick")
+        echo "Downloading [${REPO_TYPE} dependencies]."
+        download_builder_script
+        download_oracle_setup_script
+        ;;
     *)
         echo "Defaulting to nestjs builder script for repo type [${REPO_TYPE}]."
         download_builder_script
