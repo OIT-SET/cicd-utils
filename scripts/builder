@@ -39,19 +39,9 @@ then
         NPMRC=/run/secrets/npmrc
     fi
 
-    if [[ "${BUILD_TYPE}" == 'dev' ]]
-    then
-        echo "Running npm install"
-        npm install --userconfig=${NPMRC}
-        exit 0
-    fi
-    
-    if [[ "${BUILD_TYPE}" == 'prod' ]]
-    then
-        echo "Running npm ci"
-        npm ci --userconfig=${NPMRC}
-        exit 0
-    fi
+    echo "Running npm ci"
+    npm ci --userconfig=${NPMRC}
+    exit 0
 fi
 
 if [[ "${ACTION}" == "build" ]]
