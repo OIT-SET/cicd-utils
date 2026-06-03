@@ -1,6 +1,18 @@
 #!/bin/bash
 
+set -eu
+
 # install required oracle dependencies
 apt-get update && \
     apt-get install -y --no-install-recommends libaio1 libnsl2 && \
     rm -rf /var/lib/apt/lists/*
+
+# find the oracle client binary
+oracle_home="$(find /usr/lib/oracle -mindepth 2 -maxdepth 2 -type d -path "/usr/lib/oracle/${ORACLE_CLIENT_VERSION}.*/client64")"
+
+# verify exactly one oracle client was found
+test -n "$oracle_home"
+test "$(printf '%s\n' "$oracle_home" | wc -l)" -eq 1
+
+# link the oracle client to a known location
+ln -sfn "$oracle_home" /usr/lib/oracle/current
