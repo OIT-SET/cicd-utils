@@ -2,6 +2,34 @@
 
 A collection of utility scripts for Ohio University's Software Engineering Team's CICD pipeline.
 
+## Scripts
+
+### Builder
+
+Runs install and build actions for NestJS-style projects. Supports (`install|build`) actions and build type (`dev|prod`). During installs, it runs `npm ci` with a mounted npm config. For `prod` builds, it runs `npm run build` and then removes source code in `src` and `test`.
+
+Requirements:
+- `npm` is available.
+- npmrc is mounted at `/kaniko/npm/npmrc` or `/run/secrets/npmrc`.
+
+### Install Dependencies
+
+Downloads pinned release artifacts (`builder`, optional `oracle-setup`, and `j2tmpl`) into `/usr/bin`, makes them executable, and verifies each file with SHA-256 checksums. Supports repo-type specific behavior, including Oracle setup for `nestjs-thick`.
+
+Requirements:
+- `wget`, `sha256sum`, and `chmod` are available.
+- User has write access to `/usr/bin`.
+
+### Oracle Setup
+
+Finds the Oracle client directory that matches `ORACLE_CLIENT_VERSION`, creates a stable symlink at `/usr/lib/oracle/current`, and installs required runtime libraries. The script fails fast if the version variable is missing or if client discovery is ambiguous.
+
+Requirements:
+- `ORACLE_CLIENT_VERSION` environment variable exists.
+- Debian/Ubuntu-like base image with `apt-get`.
+- User has root privileges.
+- Oracle client present under `/usr/lib/oracle`.
+
 ## When Updating
 
 For every file that was changed and downloaded via the `install-dependencies` script:
