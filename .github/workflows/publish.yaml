@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to publish'
+        description: 'Version number to publish, ie. 1.0.0'
         required: true
 
 jobs:
@@ -19,14 +19,14 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=${{ github.event.inputs.version }}
-          echo "Creating release for version $VERSION"
+          echo "Creating release for version v$VERSION"
           gh release create "v$VERSION" --title "v$VERSION" --generate-notes --notes "Release notes for version $VERSION:"
       - name: Upload Release Assets
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=${{ github.event.inputs.version }}
-          echo "Uploading assets for version $VERSION"
-          gh release upload "v$VERSION" ./scripts/builder --clobber
-          gh release upload "v$VERSION" ./scripts/install-dependencies --clobber
-          gh release upload "v$VERSION" ./scripts/oracle-setup --clobber
+          echo "Uploading assets for version v$VERSION"
+          gh release upload "v$VERSION" ./scripts/builder
+          gh release upload "v$VERSION" ./scripts/install-dependencies
+          gh release upload "v$VERSION" ./scripts/oracle-setup
