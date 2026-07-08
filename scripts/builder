@@ -30,13 +30,23 @@ echo "Running action [${ACTION}] for build type [${BUILD_TYPE}]."
 
 if [[ "${ACTION}" == "install" ]]
 then
-    # skafold kaniko build or ci/cd pipeline build.
-    NPMRC="/kaniko/npm/npmrc"
 
-    if [ -f /run/secrets/npmrc ]
+    # skafold kaniko build or ci/cd pipeline build
+    KANIKO_NPMRC="/kaniko/npm/npmrc"
+
+    # skaffold local profile build
+    SKAFFOLD_NPMRC="/run/secrets/npmrc"
+
+    if [[ ! -f ${KANIKO_NPMRC} && ! -f ${SKAFFOLD_NPMRC} ]]; then
+        echo "Error: npmrc file not found in ${KANIKO_NPMRC} or ${SKAFFOLD_NPMRC}."
+        exit 1
+    fi
+
+    NPMRC=${KANIKO_NPMRC}
+
+    if [ -f ${SKAFFOLD_NPMRC} ]
     then
-        # skaffold local profile build.
-        NPMRC=/run/secrets/npmrc
+        NPMRC=${SKAFFOLD_NPMRC}
     fi
 
     echo "Running npm ci"
