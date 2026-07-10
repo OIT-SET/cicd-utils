@@ -35,6 +35,8 @@ Requirements:
 For every file that was changed and downloaded via the `install-dependencies` script:
 1. Calculate the sha256sum of the file `sha256sum ./scripts/filename`
 1. Using the sha256sum, update the corresponding hash var in the `install-dependencies` script.
+1. Verify that the version number in each script referencing it is updated to the planned version number.
+    * example: `BUILDER_VERSION` in the `install-dependencies` script.
 
 ## Releasing a New Version
 
