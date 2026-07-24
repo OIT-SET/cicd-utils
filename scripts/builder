@@ -72,5 +72,28 @@ then
     fi
 fi
 
+if [[ "${ACTION}" == "build-hapi" ]]; then
+  if [[ "${BUILD_TYPE}" == "dev" ]]; then
+    echo "No actions needed for build type [${BUILD_TYPE}]."
+    exit 0
+  fi
+
+  if [[ "${BUILD_TYPE}" == "prod" ]]; then
+    echo "Running Hapi build."
+    npm run build
+
+    if [[ -d ./dist/src ]]; then
+      cp -r ./dist/src/. ./dist/
+      rm -rf ./dist/src
+    fi
+
+    cp -r ./src/migrations ./dist/migrations
+
+    rm -rf ./src
+    rm -rf ./types
+    exit 0
+  fi
+fi
+
 echo "Error: Unknown action [${ACTION}]."
 exit 1
