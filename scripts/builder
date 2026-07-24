@@ -15,7 +15,7 @@ then
 fi
 
 ACTION=${1}
-if [[ "${ACTION}" != "install" && "${ACTION}" != "build" ]]; then
+if [[ "${ACTION}" != "install" && "${ACTION}" != "build" && "${ACTION}" != "build-hapi" ]]; then
     echo "Error: Invalid action [${ACTION}]."
     exit 1
 fi
@@ -87,7 +87,9 @@ if [[ "${ACTION}" == "build-hapi" ]]; then
       rm -rf ./dist/src
     fi
 
-    cp -r ./src/migrations ./dist/migrations
+    if [[ -d ./src/migrations ]]; then
+      cp -r ./src/migrations ./dist/migrations
+    fi
 
     rm -rf ./src
     rm -rf ./types
